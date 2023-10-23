@@ -1,0 +1,85 @@
+<?php
+
+$words = [];
+
+if (file_exists('words.json')) {
+
+    $wordsJson = file_get_contents('words.json');
+
+    $writtenWords = json_decode($wordsJson, true);
+
+    if ($writtenWords !== null) {
+        $words = $writtenWords;
+    }
+}
+
+
+
+if (isset($_POST['word'])) {
+    $inputWord = strtolower($_POST['word']);
+    $vCount = 0;
+    $cCount = 0;
+
+    for ($i = 0; $i < strlen($inputWord); $i++) {
+        if ($inputWord[$i] === 'a' || $inputWord[$i] === 'e' || $inputWord[$i] === 'i' || $inputWord[$i] === 'o' || $inputWord[$i] === 'u') {
+            $vCount++;
+        } else if ($inputWord[$i] >= 'a' && $inputWord[$i] <= 'z') {
+            $cCount++;
+        }
+    }
+
+    $newInputWords = [
+        'wordName' => $inputWord,
+        'letterNumber' => strlen($inputWord),
+        'vowelsNumber' => $vCount,
+        'consonantsNumber' => $cCount
+    ];
+
+    $words[] = $newInputWords;
+
+    $wordsJson = json_encode($words);
+
+    file_put_contents('words.json', $wordsJson);
+}
+
+?>
+
+<form method="post" action="index.php">
+
+    <label for="word">Upišite riječ</label>
+    <br><br>
+    <input type="text" name="word">
+    <br><br>
+    <input type="submit" name="submit" value="Pošalji">
+    <br><br><br>
+
+</form>
+
+<table border="1" ;>
+
+    <tr>
+
+        <th>Riječ</th>
+        <th>Broj slova</th>
+        <th>Broj suglasnika</th>
+        <th>Broj samoglasnika</th>
+    </tr>
+
+    <?php
+
+    foreach ($words as $word) {
+    ?>
+
+        <tr>
+            <td><?php echo $word['wordName']; ?></td>
+            <td> <?php echo $word['letterNumber']; ?> </td>
+            <td> <?php echo $word['vowelsNumber']; ?> </td>
+            <td> <?php echo $word['consonantsNumber']; ?> </td>
+
+        </tr>;
+    <?php
+    }
+
+    ?>
+
+</table>
